@@ -11,8 +11,8 @@ Only GNU/Linux is supported.
 - Lock and reserve stack size.
 - Set/get process priority;
 - Set/get thread priority;
-- Set process affinity;
-- Set thread affinity;
+- Set/get process affinity;
+- Set/get thread affinity;
 - Change CPU frequency governor.
 
 ## License
