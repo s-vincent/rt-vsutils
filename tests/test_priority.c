@@ -12,6 +12,8 @@
 
 #include "rtutils.h"
 
+#define RT_TEST 1
+
 /**
  * \brief Thread function.
  * \param data not used.
@@ -36,18 +38,45 @@ static void* thread_function(void* data)
     perror("thread_set_priority");
   }
   
+#if RT_TEST
+  {
+    struct rt_prio prio;
+    printf("RT priority\n");
+    prio.priority = 50;
+    prio.policy = SCHED_FIFO;
+    ret = thread_set_rt_priority(pthread_self(), &prio);
+  }
+#endif
+
   ret = thread_get_priority(pthread_self());
-  fprintf(stdout, "Thread priority: %d\n", ret);
+  if(ret == -1 && errno != 0)
+  {
+    perror("thread_get_priority");
+  }
+  else
+  {
+    fprintf(stdout, "Thread priority: %d\n", ret);
+  }
 
   ret = thread_set_priority(pthread_self(), -15);
   if(ret != 0)
   {
     perror("thread_set_priority");
   }
-  
-  ret = thread_get_priority(pthread_self());
-  fprintf(stdout, "Thread priority: %d\n", ret);
+  else
+  {
+    ret = thread_get_priority(pthread_self());
 
+    if(ret == -1 && errno != 0)
+    {
+      perror("thread_get_priority");
+    }
+    else
+    {
+      fprintf(stdout, "Thread priority: %d\n", ret);
+    }
+  }
+  
   return NULL;
 }
 
@@ -92,18 +121,45 @@ int main(int argc, char** argv)
   {
     perror("process_set_priority");
   }
-  
+
+#if RT_TEST
+  {
+    struct rt_prio prio;
+    printf("RT priority\n");
+    prio.priority = 50;
+    prio.policy = SCHED_FIFO;
+    ret = process_set_rt_priority(getpid(), &prio);
+  }
+#endif
+
   ret = process_get_priority(getpid());
-  fprintf(stdout, "Process priority: %d\n", ret);
+  if(ret == -1 && errno != 0)
+  {
+    perror("process_get_priority");
+  }
+  else
+  {
+    fprintf(stdout, "Process priority: %d\n", ret);
+  }
 
   ret = process_set_priority(getpid(), -15);
   if(ret != 0)
   {
     perror("process_set_priority");
   }
-  
-  ret = process_get_priority(getpid());
-  fprintf(stdout, "Process priority: %d\n", ret);
+  else
+  {
+    ret = process_get_priority(getpid());
+
+    if(ret == -1 && errno != 0)
+    {
+      perror("process_get_priority");
+    }
+    else
+    {
+      fprintf(stdout, "Process priority: %d\n", ret);
+    }
+  }
 
   return EXIT_SUCCESS;
 }

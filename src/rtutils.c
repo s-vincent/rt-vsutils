@@ -164,7 +164,22 @@ int thread_get_affinity(pthread_t th, int* cpus, size_t cpus_size)
 
 int process_set_priority(pid_t pid, int priority)
 {
+  int ret = 0;
+
   if(priority < -20 || priority > 19)
+  {
+    errno = EINVAL;
+    return -1;
+  }
+
+  ret = sched_getscheduler(pid);
+  if(ret == -1)
+  {
+    return -1;
+  }
+
+  /* failed if running with real-time priority */
+  if(ret != SCHED_OTHER)
   {
     errno = EINVAL;
     return -1;
@@ -175,6 +190,21 @@ int process_set_priority(pid_t pid, int priority)
 
 int process_get_priority(pid_t pid)
 {
+  int ret = 0;
+
+  ret = sched_getscheduler(pid);
+  if(ret == -1)
+  {
+    return -1;
+  }
+
+  /* failed if running with real-time priority */
+  if(ret != SCHED_OTHER)
+  {
+    errno = EINVAL;
+    return -1;
+  }
+
   errno = 0;
   return getpriority(PRIO_PROCESS, pid);
 }
@@ -182,8 +212,22 @@ int process_get_priority(pid_t pid)
 int thread_set_priority(pthread_t th, int priority)
 {
   pid_t tid = syscall(SYS_gettid);
+  struct sched_param param;
+  int policy = 0;
+  int ret = 0;
 
-  (void)th;
+  ret = pthread_getschedparam(th, &policy, &param);
+  if(ret != 0)
+  {
+    return -1;
+  }
+
+  /* failed if running with real-time priority */
+  if(policy != SCHED_OTHER)
+  {
+    errno = EINVAL;
+    return -1;
+  }
 
   /* WARNING non-portable: on Linux, the nice() priority is per-thread */
   return setpriority(PRIO_PROCESS, tid, priority);
@@ -192,8 +236,22 @@ int thread_set_priority(pthread_t th, int priority)
 int thread_get_priority(pthread_t th)
 {
   pid_t tid = syscall(SYS_gettid);
+  struct sched_param param;
+  int policy = 0;
+  int ret = 0;
 
-  (void)th;
+  ret = pthread_getschedparam(th, &policy, &param);
+  if(ret != 0)
+  {
+    return -1;
+  }
+
+  /* failed if running with real-time priority */
+  if(policy != SCHED_OTHER)
+  {
+    errno = EINVAL;
+    return -1;
+  }
 
   /* WARNING non-portable: on Linux, the nice() priority is per-thread */
   return getpriority(PRIO_PROCESS, tid);
@@ -233,7 +291,7 @@ int process_get_rt_priority(pid_t pid, struct rt_prio* priority)
   }
 
   ret = sched_getscheduler(pid);
-  if(ret < 0)
+  if(ret == -1)
   {
     return ret;
   }

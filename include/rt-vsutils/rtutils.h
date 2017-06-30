@@ -81,7 +81,7 @@ struct rt_prio
 int mem_lock_reserve(size_t stack_size);
 
 /**
- * \brief Disable the percent of time reserved for shared-time processes on 
+ * \brief Disable the percent of time reserved for time-sharing processes on 
  * GNU/Linux systems.
  * \return 0 if success, negative value otherwise.
  */
@@ -136,33 +136,41 @@ int thread_set_affinity(pthread_t th, int* cpus, size_t cpus_size);
 int thread_get_affinity(pthread_t th, int* cpus, size_t cpus_size);
 
 /**
- * \brief Sets shared-time priority of a process.
+ * \brief Sets time-sharing priority of a process.
  * \param pid PID of the process to change priority.
  * \param priority priority to set (range from -20 to 19).
  * \return 0 if success, negative value otherwise.
+ * \note if process is running with real-time priority (FIFO, round-robin), this
+ * function will failed.
  */
 int process_set_priority(pid_t pid, int priority);
 
 /**
- * \brief Returns shared-time priority of a process.
+ * \brief Returns time-sharing priority of a process.
  * \param pid PID of the process to change priority.
  * \return priority of the process.
+ * \note if process is running with real-time priority (FIFO, round-robin), this
+ * function will failed.
  * \note if returns -1, check if errno is set to seee if it is an error or not.
  */
 int process_get_priority(pid_t pid);
 
 /**
- * \brief Sets shared-time priority of a thread.
+ * \brief Sets time-sharing priority of a thread.
  * \param th ID of the thread to change priority.
  * \param priority priority to set (range from -20 to 19).
  * \return 0 if success, negative value otherwise.
+ * \note if thread is running with real-time priority (FIFO, round-robin), this
+ * function will failed.
  */
 int thread_set_priority(pthread_t th, int priority);
 
 /**
- * \brief Returns shared-time priority of a thread.
+ * \brief Returns time-sharing priority of a thread.
  * \param th ID of the thread to change priority.
  * \return priority of the thread.
+ * \note if thread is running with real-time priority (FIFO, round-robin), this
+ * function will failed.
  * \note if returns -1, check if errno is set to seee if it is an error or not.
  */
 int thread_get_priority(pthread_t th);
