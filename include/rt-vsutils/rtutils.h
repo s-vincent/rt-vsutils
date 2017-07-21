@@ -245,5 +245,17 @@ int cpufreq_set_governor(enum cpufreq_governor mode, unsigned int cpu);
  */
 enum cpufreq_governor cpufreq_get_governor(unsigned int cpu);
 
+/**
+ * \brief Launch a specific task periodically.
+ * \param fcn function to call periodically.
+ * \param data data to pass to the function.
+ * \param period period in nanoseconds.
+ * \param id ID of the thread is function succeed.
+ * \return 0 if thread is successfully launched, -1 otherwise.
+ * \note This function is blocking the thread, use pthread_cancel to quit.
+ * \note This function is blocking signals for the current thread.
+ */
+int thread_periodic_task(void (*fcn)(void*), void* data, unsigned long period);
+
 #endif /* RTVSUTILS_RTUTILS_H */
 

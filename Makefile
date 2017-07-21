@@ -2,7 +2,7 @@ CFLAGS = -std=c11 -Wall -Wextra -Werror -Wstrict-prototypes -Wredundant-decls -W
 LDFLAGS = -lpthread -lrt 
 SOURCES = src/rtutils.c
 OBJ = $(SOURCES:.c=.o)
-TESTS = test_memlock test_affinity test_priority test_rt_priority test_cpufreq test_rt_watchdog
+TESTS = test_memlock test_affinity test_priority test_rt_priority test_cpufreq test_rt_watchdog test_periodic_task
 
 all: $(OBJ)
 	
@@ -27,6 +27,9 @@ test_cpufreq: $(OBJ) tests/test_cpufreq.o
 	$(CC) -o $@ $? $(LDFLAGS)
 
 test_rt_watchdog: $(OBJ) tests/test_rt_watchdog.o
+	$(CC) -o $@ $? $(LDFLAGS)
+
+test_periodic_task: $(OBJ) tests/test_periodic_task.o
 	$(CC) -o $@ $? $(LDFLAGS)
 
 doc:

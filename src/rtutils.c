@@ -25,8 +25,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <sched.h>
 #include <errno.h>
+
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -490,5 +492,48 @@ enum cpufreq_governor cpufreq_get_governor(unsigned int cpu)
   {
     return CPUFREQ_OTHER;
   }
+}
+
+int thread_periodic_task(void (*fcn)(void*), void* data, unsigned long period)
+{
+    struct timespec time;
+    sigset_t mask;
+
+    sigfillset(&mask);
+    sigdelset(&mask, SIGTERM);
+    if(pthread_sigmask(SIG_BLOCK, &mask, NULL) != 0)
+    {
+        return -1;
+    }
+
+    clock_gettime(CLOCK_MONOTONIC, &time);
+
+    while(1)
+    {
+        unsigned long nano = 0;
+        unsigned long second = 0;
+
+        second = period / 1000000000;
+        nano = period % 1000000000;
+
+        time.tv_sec += second;
+        time.tv_nsec += nano;
+
+        if(time.tv_nsec >= 1000000000)
+        {
+            time.tv_sec++;
+            nano -= 1000000000;
+        }
+        
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+        /* thread can be terminated here if pthread_cancel is used! */
+        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &time, NULL);
+        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+
+        /* task to execute */
+        fcn(data);
+    }
+
+    return 0;
 }
 

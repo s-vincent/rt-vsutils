@@ -13,7 +13,8 @@ Only GNU/Linux is supported.
 - Set/get thread priority;
 - Set/get process affinity;
 - Set/get thread affinity;
-- Change CPU frequency governor.
+- Change CPU frequency governor;
+- Periodic task.
 
 ## License
 
