@@ -250,7 +250,6 @@ enum cpufreq_governor cpufreq_get_governor(unsigned int cpu);
  * \param fcn function to call periodically.
  * \param data data to pass to the function.
  * \param period period in nanoseconds.
- * \param id ID of the thread is function succeed.
  * \return 0 if thread is successfully launched, -1 otherwise.
  * \note This function is blocking the thread, use pthread_cancel to quit.
  * \note This function is blocking signals for the current thread.

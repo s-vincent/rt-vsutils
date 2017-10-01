@@ -1,5 +1,5 @@
 CFLAGS = -std=c11 -Wall -Wextra -Werror -Wstrict-prototypes -Wredundant-decls -Wshadow -pedantic -pedantic-errors -fno-strict-aliasing -D_XOPEN_SOURCE=700 -O2 -I./include/rt-vsutils
-LDFLAGS = -lpthread -lrt 
+LDFLAGS = -lpthread -lrt
 SOURCES = src/rtutils.c
 OBJ = $(SOURCES:.c=.o)
 TESTS = test_memlock test_affinity test_priority test_rt_priority test_cpufreq test_rt_watchdog test_periodic_task
